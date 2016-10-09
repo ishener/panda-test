@@ -13,13 +13,13 @@
 <body>
 
 <div class="main" ng-controller="MainCtrl" ng-cloak>
-    <form ng-submit="addComment()" novalidate class="main-form">
-        <div class="mb-10"><input type="text" ng-model="comment.email" class="text-input input" placeholder="Email" /></div>
+    <form ng-submit="addComment()" novalidate class="main-form" name="commentForm">
+        <div class="mb-10"><input type="email" ng-model="comment.email" class="text-input input" placeholder="Email" required /></div>
         <div class="mb-10">
-            <textarea ng-model="comment.body" class="input textarea-input" placeholder="Message"></textarea>
+            <textarea ng-model="comment.body" class="input textarea-input" placeholder="Message" required></textarea>
         </div>
         <div class="right-align">
-            <input type="submit" value="SUBMIT" />
+            <input type="submit" value="SUBMIT" ng-disabled="commentForm.$invalid" />
         </div>
     </form>
 
@@ -27,8 +27,8 @@
         <div class="filter mb-20">
             <input type="text" ng-model="filterText" class="text-input input" placeholder="Filter" />
         </div>
-        <div ng-show="loading">Loading comments...</div>
-        <div ng-repeat="comment in comments | filter:filterText" class="comment">
+        <div ng-show="comments.getComments() === null">Loading comments...</div>
+        <div ng-repeat="comment in comments.getComments() | filter:filterText" class="comment">
             <div class="mr-10"><img ng-src="{{comment.avatar + '?d=identicon&s=50'}}" class="comment-img" /></div>
             <div>
                 <div class="comment-email"><strong>{{comment.email}}</strong></div>

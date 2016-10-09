@@ -1,25 +1,35 @@
 angular.module('bigpanda', [])
-    .controller('MainCtrl', function ($scope, $http) {
-        $scope.comments = [];
-        $scope.comment = {};
-        $scope.loading = true;
-
-        $scope.addComment = function () {
-            $scope.comment.avatar = "https://www.gravatar.com/avatar/" + md5($scope.comment.email);
-            $http
-                .post('/save', $scope.comment)
-                .success(function (data, status, headers, config) {});
-            $scope.comments.push($scope.comment);
-            $scope.comment = {};
+    .service('CommentService', function ($http) {
+        var self = this;
+        this.comments = null;
+        
+        this.getComments = function () {
+            return this.comments;
         };
-
+        
+        this.addComment = function (comment) {
+            comment.avatar = "https://www.gravatar.com/avatar/" + md5(comment.email);
+            $http
+                .post('/save', comment)
+                .success(function (data, status, headers, config) {});
+            self.comments.push(comment);
+        };
 
         $http
             .get('/get-comments')
             .success(function (data, status, headers, config) {
-                $scope.comments = data;
-                $scope.loading = false;
+                self.comments = data;
             });
+    })
+    .controller('MainCtrl', function ($scope, CommentService) {
+        $scope.comment = {};
+        $scope.comments = CommentService;
+
+        $scope.addComment = function () {
+            CommentService.addComment($scope.comment);
+            $scope.comment = {};
+        }
+
     })
 
 
